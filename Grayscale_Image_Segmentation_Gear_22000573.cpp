@@ -11,7 +11,7 @@
 using namespace std;
 using namespace cv;
 
-void inverse(Mat& output) {//RGBÀÌ¸é¼­ »öÀ» inverse ½ÃÅ°±â
+void inverse(Mat& output) {//RGBì´ë©´ì„œ ìƒ‰ì„ inverse ì‹œí‚¤ê¸°
 	for (int i = 0; i < output.rows; i++) {
 		for (int k = 0; k < output.cols; k++) {
 			// Invert each channel (Blue, Green, Red)
@@ -23,8 +23,8 @@ void inverse(Mat& output) {//RGBÀÌ¸é¼­ »öÀ» inverse ½ÃÅ°±â
 	}
 }
 
-void RGB_Thresh(Mat& src, Mat& output, int threshold) {//RGBÀÌ¸é¼­ Æ¯Á¤°ªÀ» ±âÁØÀ¸·Î Èò»ö°ú °ËÁ¤À¸·Î ³ª´©±â
-	//±â¾î »ö±ò rgb·Î Àû¿ëÇÏ±â
+void RGB_Thresh(Mat& src, Mat& output, int threshold) {//RGBì´ë©´ì„œ íŠ¹ì •ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ í°ìƒ‰ê³¼ ê²€ì •ìœ¼ë¡œ ë‚˜ëˆ„ê¸°
+	//ê¸°ì–´ ìƒ‰ê¹” rgbë¡œ ì ìš©í•˜ê¸°
 	for (int i = 0; i < output.rows; i++) {
 		for (int k = 0; k < output.cols; k++) {
 			if (src.at<uchar>(i, k) > threshold) {
@@ -45,41 +45,41 @@ void RGB_Thresh(Mat& src, Mat& output, int threshold) {//RGBÀÌ¸é¼­ Æ¯Á¤°ªÀ» ±âÁØ
 void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 	Mat binary;
 
-	threshold(src, binary, 128, 255, THRESH_BINARY);//binary º¯È¯, ÀÓÀÇ·Î threshold °ª 128¼³Á¤
-	imshow("binary[" + to_string(idx) + "]", binary);//±â¾î 1 binary °á°ú º¸±â
+	threshold(src, binary, 128, 255, THRESH_BINARY);//binary ë³€í™˜, ì„ì˜ë¡œ threshold ê°’ 128ì„¤ì •
+	imshow("binary[" + to_string(idx) + "]", binary);//ê¸°ì–´ 1 binary ê²°ê³¼ ë³´ê¸°
 
-	vector<vector<Point>> contours;//±â¾î ÀÌ»¡À» È®ÀÎÇÏ±â À§ÇÑ contour
+	vector<vector<Point>> contours;//ê¸°ì–´ ì´ë¹¨ì„ í™•ì¸í•˜ê¸° ìœ„í•œ contour
 
-	//Point anchor = Point(binary.cols / 2 - 16, binary.rows / 2 - 68);//¿øÀÇ Áß½ÉÁ¡
+	//Point anchor = Point(binary.cols / 2 - 16, binary.rows / 2 - 68);//ì›ì˜ ì¤‘ì‹¬ì 
 
-	circle(binary, anchor, r1, 0, -2, LINE_8, 0);//°ËÀº»ö ¿ø ±×¸®±â
-	imshow("circle_fill[" + to_string(idx) + "]", binary);//binaryÃ³¸®ÇÑ »çÁø¿¡ °ËÀº»ö ¿øÀ» Ãß°¡ÇØ ÀÌ»¡¸¸ º¸ÀÌµµ·Ï ÇÑ »çÁø
+	circle(binary, anchor, r1, 0, -2, LINE_8, 0);//ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	imshow("circle_fill[" + to_string(idx) + "]", binary);//binaryì²˜ë¦¬í•œ ì‚¬ì§„ì— ê²€ì€ìƒ‰ ì›ì„ ì¶”ê°€í•´ ì´ë¹¨ë§Œ ë³´ì´ë„ë¡ í•œ ì‚¬ì§„
 
 	/// Find contours
 	findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 
 	/// Draw all contours excluding holes
-	Mat drawing(binary.size(), CV_8U, Scalar(255));//contour °á°ú¸¦ º¸±â À§ÇØ, Èò»ö ¹è°æ
-	drawContours(drawing, contours, -1, Scalar(0), 2);//ÀÌ»¡ÀÇ Å×µÎ¸®¸¸ °ËÀº»öÀ¸·Î Ç¥Çö
+	Mat drawing(binary.size(), CV_8U, Scalar(255));//contour ê²°ê³¼ë¥¼ ë³´ê¸° ìœ„í•´, í°ìƒ‰ ë°°ê²½
+	drawContours(drawing, contours, -1, Scalar(0), 2);//ì´ë¹¨ì˜ í…Œë‘ë¦¬ë§Œ ê²€ì€ìƒ‰ìœ¼ë¡œ í‘œí˜„
 	imshow("countour[" + to_string(idx) + "]", drawing);
 
-	int count = 0;//ÀÌ»¡ °³¼ö
-	int fail_count = 0;//¹®Á¦°¡ ÀÖ´Â ±â¾îÀÇ ¼ö
-	float area_sum = 0;//ÀüÃ¼ ±â¾îÀÇ ¸éÀû
-	Scalar contourColor;//ÀÌ»¡ Å×µÎ¸® »ö
-	Scalar textColor;//±Û¾¾ »ö
+	int count = 0;//ì´ë¹¨ ê°œìˆ˜
+	int fail_count = 0;//ë¬¸ì œê°€ ìˆëŠ” ê¸°ì–´ì˜ ìˆ˜
+	float area_sum = 0;//ì „ì²´ ê¸°ì–´ì˜ ë©´ì 
+	Scalar contourColor;//ì´ë¹¨ í…Œë‘ë¦¬ ìƒ‰
+	Scalar textColor;//ê¸€ì”¨ ìƒ‰
 
-	Mat drawing_color = Mat::zeros(binary.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
-	Mat output = Mat::zeros(src.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	Mat drawing_color = Mat::zeros(binary.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
+	Mat output = Mat::zeros(src.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	RGB_Thresh(src, output, 200);//RGBÀÌ¸é¼­ Èò»ö°ú °ËÁ¤»ö¸¸ °®µµ·Ï
+	RGB_Thresh(src, output, 200);//RGBì´ë©´ì„œ í°ìƒ‰ê³¼ ê²€ì •ìƒ‰ë§Œ ê°–ë„ë¡
 
-	circle(output, anchor, r2, Scalar(120, 120, 120), -2, LINE_8, 0);//Áß°£ Å©±â È¸»ö ¿ø ±×¸®±â
-	circle(output, anchor, r3, Scalar(0, 0, 0), -2, LINE_8, 0);//Á¦ÀÏÀÛÀº °ËÀº»ö ¿ø ±×¸®±â
-	imshow("circle_fill_output[" + to_string(idx) + "]", output);//rgb·Î ¹Ù²Û »çÁø
+	circle(output, anchor, r2, Scalar(120, 120, 120), -2, LINE_8, 0);//ì¤‘ê°„ í¬ê¸° íšŒìƒ‰ ì› ê·¸ë¦¬ê¸°
+	circle(output, anchor, r3, Scalar(0, 0, 0), -2, LINE_8, 0);//ì œì¼ì‘ì€ ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	imshow("circle_fill_output[" + to_string(idx) + "]", output);//rgbë¡œ ë°”ê¾¼ ì‚¬ì§„
 
-	inverse(output);//RGB inverse½ÃÅ°±â
+	inverse(output);//RGB inverseì‹œí‚¤ê¸°
 
 	threshold(output, output, 200, 255, 2);//Threshold Truncated
 	imshow("output[" + to_string(idx) + "]", output);
@@ -87,46 +87,119 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 	Point center;
 	Point text_point;
 	int radius = 32; // Circle radius
-	int num_points = 12;// Point ¼ö
-	float angle = 0;//¿øÀ» ±×¸± °¢µµ
-	int x = 0;//¿øÀÇ xÁÂÇ¥
-	int y = 0;//¿øÀÇ yÁÂÇ¥
+	int num_points = 12;// Point ìˆ˜
+	float angle = 0;//ì›ì„ ê·¸ë¦´ ê°ë„
+	int x = 0;//ì›ì˜ xì¢Œí‘œ
+	int y = 0;//ì›ì˜ yì¢Œí‘œ
 
 	for (int i = 0; i < contours.size(); i++)
 	{
-		count++;//ÀÌ»¡ °³¼ö Ãß°¡
-		printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//ÇØ´ç ±â¾î ÀÌ»¡ÀÇ ¸éÀû°ú ±æÀÌ¸¦ Ãâ·Â
+		count++;//ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+		printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//í•´ë‹¹ ê¸°ì–´ ì´ë¹¨ì˜ ë©´ì ê³¼ ê¸¸ì´ë¥¼ ì¶œë ¥
 
-		if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
-			fail_count++;//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãß°¡
-			contourColor = Scalar(0, 0, 255); // »¡°£»ö (BGR ¼ø¼­)
+		//if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
+		//	fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+		//	contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
 
-			//Á¡¼± ¿øÀÇ Áß½É ÁÂÇ¥ ±¸ÇÏ±â
-			if (contourArea(contours[i]) < 400) {
-				center = (contours[i][contours[i].size() - 1] + contours[i][0]) / 2;
+		//	//ì ì„  ì›ì˜ ì¤‘ì‹¬ ì¢Œí‘œ êµ¬í•˜ê¸°
+		//	if (contourArea(contours[i]) < 400) {
+		//		center = (contours[i][contours[i].size() - 1] + contours[i][0]) / 2;
+		//	}
+		//	else {
+		//		center = (contours[i][contours[i].size() - 11]);
+		//	}
+		//	for (int num = 0; num < num_points; num++) {
+		//		//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
+		//		angle = 2 * CV_PI * num / num_points;
+		//		x = center.x + radius * cos(angle);
+		//		y = center.y + radius * sin(angle);
+
+		//		//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+		//		circle(output, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
+		//	}
+
+		//}
+		if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {
+			fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+			contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
+			switch (idx) {
+			case 1:
+			case 2:
+				//ì ì„  ì›ì˜ ì¤‘ì‹¬ ì¢Œí‘œ êµ¬í•˜ê¸°
+				if (contourArea(contours[i]) < 400) {
+					center = (contours[i][contours[i].size() - 1] + contours[i][0]) / 2;
+				}
+				else {
+					center = (contours[i][contours[i].size() - 11]);
+				}
+				for (int num = 0; num < num_points; num++) {
+					//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
+					angle = 2 * CV_PI * num / num_points;
+					x = center.x + radius * cos(angle);
+					y = center.y + radius * sin(angle);
+
+					//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+					circle(output, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
+				}
+				break;
+
+			case 3: //ì ì„  ì›ì˜ ì¤‘ì‹¬ ì¢Œí‘œ êµ¬í•˜ê¸°
+				if (contourArea(contours[i]) < 1000) {
+					center = (contours[i][contours[i].size() - 11]);
+				}
+				else if (contourArea(contours[i]) < 1840) {
+					center = (contours[i][30] + contours[i][0]) / 2;
+				}
+				else if (contourArea(contours[i]) < 1860) {
+					center = (contours[i][30] + contours[i][0]) / 2;
+				}
+				else {
+					center = (contours[i][30] + contours[i][0]) / 2;
+				}
+				for (int num = 0; num < num_points; num++) {
+					//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
+					angle = 2 * CV_PI * num / num_points;
+					x = center.x + radius * cos(angle);
+					y = center.y + radius * sin(angle);
+
+					//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+					circle(output, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
+				}
+				break;
+			case 4:
+				if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {//ë©´ì ì´ 1000ì´í•˜ê±°ë‚˜ 1500 ì´ìƒì¼ ë•Œ
+					fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+					contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
+
+					//ì ì„  í…Œë‘ë¦¬ë¥¼ ê°€ì§„ ì›ì˜ ì¤‘ì‹¬ì 
+					if (contourArea(contours[i]) <1800) {
+						center = (contours[i][30] + contours[i][0]) / 2;
+					}
+					else {
+						center= (contours[i][35] + contours[i][0]) / 2;
+					}
+					//ì ì„  ì› ê·¸ë¦¬ê¸°
+					for (int num = 0; num < num_points; num++) {
+						//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
+						angle = 2 * CV_PI * num / num_points;
+						x = center.x + radius * cos(angle);//ì ì˜ xì¢Œí‘œ
+						y = center.y + radius * sin(angle);//ì ì˜ yì¢Œí‘œ
+
+						//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+						circle(output, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
+					}
+				}
+				break;
 			}
-			else {
-				center = (contours[i][contours[i].size() - 11]);
-			}
-			for (int num = 0; num < num_points; num++) {
-				//¿ø Å×µÎ¸® Á¡ °è»ê
-				angle = 2 * CV_PI * num / num_points;
-				x = center.x + radius * cos(angle);
-				y = center.y + radius * sin(angle);
-
-				//³ë¶õ»ö ¿ø ±×¸®±â
-				circle(output, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
-			}
-
 		}
 		else {
-			contourColor = Scalar(0, 255, 0); // ÃÊ·Ï»ö (BGR ¼ø¼­)
+			contourColor = Scalar(0, 255, 0); // ì´ˆë¡ìƒ‰ (BGR ìˆœì„œ)
 		}
 
-		area_sum += contourArea(contours[i]); // ÀüÃ¼ ¸éÀû ±¸ÇÏ±â
+		area_sum += contourArea(contours[i]); // ì „ì²´ ë©´ì  êµ¬í•˜ê¸°
 
-		// À±°û¼± ±×¸®±â
-		drawContours(drawing_color, contours, i, contourColor, 2); // i ¹øÂ° À±°û¼±¿¡ ´ëÇØ »öÀ» ÁöÁ¤ÇÏ¿© ±×¸®±â
+		// ìœ¤ê³½ì„  ê·¸ë¦¬ê¸°
+		drawContours(drawing_color, contours, i, contourColor, 2); // i ë²ˆì§¸ ìœ¤ê³½ì„ ì— ëŒ€í•´ ìƒ‰ì„ ì§€ì •í•˜ì—¬ ê·¸ë¦¬ê¸°
 
 	}
 
@@ -134,8 +207,7 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 
 	for (int i = 0; i < contours.size(); i++)
 	{
-
-		if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
+		if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ê±°ë‚˜ 1500ë³´ë‹¤ í° ê²½ìš°
 			textColor = Scalar(0, 0, 255);
 
 		}
@@ -145,25 +217,25 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 
 		text_point = contours[i][0];
 		std::string area_text = std::to_string((int)contourArea(contours[i]));
-		putText(add_text, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ¸éÀûÀ» ÀÌ¹ÌÁö¿¡ Ç¥½Ã
+		putText(add_text, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ë©´ì ì„ ì´ë¯¸ì§€ì— í‘œì‹œ
 
 	}
 
 	imshow("add_text[" + to_string(idx) + "]", add_text);
-	// ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû ¼ıÀÚ¸¦ drawing ÀÌ¹ÌÁö¿¡ Ãß°¡
+	// ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ìˆ«ìë¥¼ drawing ì´ë¯¸ì§€ì— ì¶”ê°€
 
-	imshow("add_color circle[" + to_string(idx) + "]", output);//¹®Á¦°¡ ÀÖ´Â ºÎºĞ Á¡¼± ¿øÀ¸·Î Ç¥ÇöÇÑ »çÁø
-	area_sum = area_sum / count;//±â¾îÀÇ Æò±Õ ¸éÀû ±¸ÇÏ±â
-	imshow("color contour[" + to_string(idx) + "]", drawing_color);//¹®Á¦°¡ ¾ø´Â °æ¿ì ÃÊ·Ï»ö, ¹®Á¦°¡ ÀÖ´Â °æ¿ì »¡°£»ö Ã³¸®ÇÑ »çÁø
+	imshow("add_color circle[" + to_string(idx) + "]", output);//ë¬¸ì œê°€ ìˆëŠ” ë¶€ë¶„ ì ì„  ì›ìœ¼ë¡œ í‘œí˜„í•œ ì‚¬ì§„
+	area_sum = area_sum / count;//ê¸°ì–´ì˜ í‰ê·  ë©´ì  êµ¬í•˜ê¸°
+	imshow("color contour[" + to_string(idx) + "]", drawing_color);//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš° ì´ˆë¡ìƒ‰, ë¬¸ì œê°€ ìˆëŠ” ê²½ìš° ë¹¨ê°„ìƒ‰ ì²˜ë¦¬í•œ ì‚¬ì§„
 
-	printf("Teeth numbers: %d\n", count);//ÀÌ»¡ °³¼ö Ãâ·Â
-	printf("Avg. Teeth Area: %.2f\n", area_sum);//ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû Ãâ·Â
-	printf("Defective Teeth: %d\n", fail_count);//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãâ·Â
+	printf("Teeth numbers: %d\n", count);//ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
+	printf("Avg. Teeth Area: %.2f\n", area_sum);//ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ì¶œë ¥
+	printf("Defective Teeth: %d\n", fail_count);//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
 	if (fail_count > 0) {
-		printf("Quality: FAIL\n\n");//¹®Á¦°¡ ÀÖ´Â °æ¿ì
+		printf("Quality: FAIL\n\n");//ë¬¸ì œê°€ ìˆëŠ” ê²½ìš°
 	}
 	else if (fail_count == 0) {
-		printf("Quality: PASS\n\n");//¹®Á¦°¡ ¾ø´Â °æ¿ì
+		printf("Quality: PASS\n\n");//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš°
 	}
 }
 
@@ -172,48 +244,48 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 
 void main()
 {
-	//±â¾î 1
-	cv::Mat src, binary;//Çà·Ä »ı¼º
+	//ê¸°ì–´ 1
+	cv::Mat src, binary;//í–‰ë ¬ ìƒì„±
 	src = cv::imread("Gear1.jpg", 0);
-	Point anchor = Point(src.cols / 2 - 16, src.rows / 2 - 68);//¿øÀÇ Áß½ÉÁ¡
+	Point anchor = Point(src.cols / 2 - 16, src.rows / 2 - 68);//ì›ì˜ ì¤‘ì‹¬ì 
 	int r1 = 169;
 	int r2 = 140;
 	int r3 = 70;
 	
 	FilterandContour(src, anchor, r1, r2, r3, 1);
 
-	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary º¯È¯, ÀÓÀÇ·Î threshold °ª 128¼³Á¤
-	//imshow("binary", binary);//±â¾î 1 binary °á°ú º¸±â
+	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary ë³€í™˜, ì„ì˜ë¡œ threshold ê°’ 128ì„¤ì •
+	//imshow("binary", binary);//ê¸°ì–´ 1 binary ê²°ê³¼ ë³´ê¸°
 	//
-	//vector<vector<Point>> contours;//±â¾î ÀÌ»¡À» È®ÀÎÇÏ±â À§ÇÑ contour
+	//vector<vector<Point>> contours;//ê¸°ì–´ ì´ë¹¨ì„ í™•ì¸í•˜ê¸° ìœ„í•œ contour
 	//
-	//Point anchor = Point(binary.cols / 2 - 16, binary.rows / 2 - 68);//¿øÀÇ Áß½ÉÁ¡
+	//Point anchor = Point(binary.cols / 2 - 16, binary.rows / 2 - 68);//ì›ì˜ ì¤‘ì‹¬ì 
 
-	//circle(binary, anchor, 169, 0, -2, LINE_8, 0);//°ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill", binary);//binaryÃ³¸®ÇÑ »çÁø¿¡ °ËÀº»ö ¿øÀ» Ãß°¡ÇØ ÀÌ»¡¸¸ º¸ÀÌµµ·Ï ÇÑ »çÁø
+	//circle(binary, anchor, 169, 0, -2, LINE_8, 0);//ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill", binary);//binaryì²˜ë¦¬í•œ ì‚¬ì§„ì— ê²€ì€ìƒ‰ ì›ì„ ì¶”ê°€í•´ ì´ë¹¨ë§Œ ë³´ì´ë„ë¡ í•œ ì‚¬ì§„
 
 	///// Find contours
 	//findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 
 	///// Draw all contours excluding holes
-	//Mat drawing(binary.size(), CV_8U, Scalar(255));//contour °á°ú¸¦ º¸±â À§ÇØ, Èò»ö ¹è°æ
-	//drawContours(drawing, contours, -1, Scalar(0), 2);//ÀÌ»¡ÀÇ Å×µÎ¸®¸¸ °ËÀº»öÀ¸·Î Ç¥Çö
+	//Mat drawing(binary.size(), CV_8U, Scalar(255));//contour ê²°ê³¼ë¥¼ ë³´ê¸° ìœ„í•´, í°ìƒ‰ ë°°ê²½
+	//drawContours(drawing, contours, -1, Scalar(0), 2);//ì´ë¹¨ì˜ í…Œë‘ë¦¬ë§Œ ê²€ì€ìƒ‰ìœ¼ë¡œ í‘œí˜„
 	//imshow("countour", drawing);
 
 
-	//int count = 0;//ÀÌ»¡ °³¼ö
-	//int fail_count = 0;//¹®Á¦°¡ ÀÖ´Â ±â¾îÀÇ ¼ö
-	//float area_sum = 0;//ÀüÃ¼ ±â¾îÀÇ ¸éÀû
-	//Scalar contourColor;//ÀÌ»¡ Å×µÎ¸® »ö
-	//Scalar textColor;//±Û¾¾ »ö
+	//int count = 0;//ì´ë¹¨ ê°œìˆ˜
+	//int fail_count = 0;//ë¬¸ì œê°€ ìˆëŠ” ê¸°ì–´ì˜ ìˆ˜
+	//float area_sum = 0;//ì „ì²´ ê¸°ì–´ì˜ ë©´ì 
+	//Scalar contourColor;//ì´ë¹¨ í…Œë‘ë¦¬ ìƒ‰
+	//Scalar textColor;//ê¸€ì”¨ ìƒ‰
 
-	//Mat drawing_color = Mat::zeros(binary.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat drawing_color = Mat::zeros(binary.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	//Mat output = Mat::zeros(src.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat output = Mat::zeros(src.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
 	//RGG_Thresh(src,output,200);
-	//////±â¾î »ö±ò rgb·Î Àû¿ëÇÏ±â
+	//////ê¸°ì–´ ìƒ‰ê¹” rgbë¡œ ì ìš©í•˜ê¸°
 	////for (int i = 0; i < output.rows; i++) {
 	////	for (int k = 0; k < output.cols; k++) {
 	////		if (src.at<uchar>(i,k)>200) {
@@ -230,12 +302,12 @@ void main()
 	////	}
 	////}
 
-	//circle(output, anchor, 140, Scalar(120,120,120), -2, LINE_8, 0);//Áß°£ Å©±â È¸»ö ¿ø ±×¸®±â
-	//circle(output, anchor, 70, Scalar(0,0,0), -2, LINE_8, 0);//Á¦ÀÏÀÛÀº °ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_output", output);//rgb·Î ¹Ù²Û »çÁø
+	//circle(output, anchor, 140, Scalar(120,120,120), -2, LINE_8, 0);//ì¤‘ê°„ í¬ê¸° íšŒìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//circle(output, anchor, 70, Scalar(0,0,0), -2, LINE_8, 0);//ì œì¼ì‘ì€ ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_output", output);//rgbë¡œ ë°”ê¾¼ ì‚¬ì§„
 
 	//inverse(output);
-	//¹è°æÀ» Èò»öÀ¸·Î º¯°æÇÏ±â
+	//ë°°ê²½ì„ í°ìƒ‰ìœ¼ë¡œ ë³€ê²½í•˜ê¸°
 	//for (int i = 0; i < output.rows; i++) {
 	//	for (int k = 0; k < output.cols; k++) {
 	//		// Invert each channel (Blue, Green, Red)
@@ -252,21 +324,21 @@ void main()
 	//Point center;
 	//Point text_point;
 	//int radius = 32; // Circle radius
-	//int num_points = 12;// Point ¼ö
-	//float angle = 0;//¿øÀ» ±×¸± °¢µµ
-	//int x = 0;//¿øÀÇ xÁÂÇ¥
-	//int y = 0;//¿øÀÇ yÁÂÇ¥
+	//int num_points = 12;// Point ìˆ˜
+	//float angle = 0;//ì›ì„ ê·¸ë¦´ ê°ë„
+	//int x = 0;//ì›ì˜ xì¢Œí‘œ
+	//int y = 0;//ì›ì˜ yì¢Œí‘œ
 
 	//for (int i = 0; i < contours.size(); i++)
 	//{
-	//	count++;//ÀÌ»¡ °³¼ö Ãß°¡
-	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//ÇØ´ç ±â¾î ÀÌ»¡ÀÇ ¸éÀû°ú ±æÀÌ¸¦ Ãâ·Â
+	//	count++;//ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//í•´ë‹¹ ê¸°ì–´ ì´ë¹¨ì˜ ë©´ì ê³¼ ê¸¸ì´ë¥¼ ì¶œë ¥
 	//	
-	//	if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
-	//		fail_count++;//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãß°¡
-	//		contourColor = Scalar(0, 0, 255); // »¡°£»ö (BGR ¼ø¼­)
+	//	if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
+	//		fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//		contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
 
-	//		//Á¡¼± ¿øÀÇ Áß½É ÁÂÇ¥ ±¸ÇÏ±â
+	//		//ì ì„  ì›ì˜ ì¤‘ì‹¬ ì¢Œí‘œ êµ¬í•˜ê¸°
 	//		if (contourArea(contours[i]) < 400) {
 	//			center = (contours[i][contours[i].size() - 1]+ contours[i][0])/2;
 	//		}
@@ -274,24 +346,24 @@ void main()
 	//			center = (contours[i][contours[i].size() - 11]);
 	//		}
 	//		for (int num = 0; num < num_points; num++) {
-	//			//¿ø Å×µÎ¸® Á¡ °è»ê
+	//			//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
 	//			angle = 2 * CV_PI * num / num_points;
 	//			x = center.x + radius * cos(angle);
 	//			y = center.y + radius * sin(angle);
 
-	//			//³ë¶õ»ö ¿ø ±×¸®±â
+	//			//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
 	//			circle(output, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
 	//		}
 	//		
 	//	}
 	//	else {
-	//		contourColor = Scalar(0, 255, 0); // ÃÊ·Ï»ö (BGR ¼ø¼­)
+	//		contourColor = Scalar(0, 255, 0); // ì´ˆë¡ìƒ‰ (BGR ìˆœì„œ)
 	//	}
 	//	
-	//	area_sum+= contourArea(contours[i]); // ÀüÃ¼ ¸éÀû ±¸ÇÏ±â
+	//	area_sum+= contourArea(contours[i]); // ì „ì²´ ë©´ì  êµ¬í•˜ê¸°
 
-	//	// À±°û¼± ±×¸®±â
-	//	drawContours(drawing_color, contours, i, contourColor, 2); // i ¹øÂ° À±°û¼±¿¡ ´ëÇØ »öÀ» ÁöÁ¤ÇÏ¿© ±×¸®±â
+	//	// ìœ¤ê³½ì„  ê·¸ë¦¬ê¸°
+	//	drawContours(drawing_color, contours, i, contourColor, 2); // i ë²ˆì§¸ ìœ¤ê³½ì„ ì— ëŒ€í•´ ìƒ‰ì„ ì§€ì •í•˜ì—¬ ê·¸ë¦¬ê¸°
 
 	//}
 
@@ -300,7 +372,7 @@ void main()
 	//for (int i = 0; i < contours.size(); i++)
 	//{
 
-	//	if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
+	//	if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
 	//		textColor = Scalar(0, 0, 255);
 
 	//	}
@@ -310,64 +382,64 @@ void main()
 
 	//	text_point = contours[i][0];
 	//	std::string area_text = std::to_string((int)contourArea(contours[i]));
-	//	putText(add_text, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ¸éÀûÀ» ÀÌ¹ÌÁö¿¡ Ç¥½Ã
+	//	putText(add_text, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ë©´ì ì„ ì´ë¯¸ì§€ì— í‘œì‹œ
 
 	//}
 
 	//imshow("add_text",add_text);
-	//// ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû ¼ıÀÚ¸¦ drawing ÀÌ¹ÌÁö¿¡ Ãß°¡
+	//// ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ìˆ«ìë¥¼ drawing ì´ë¯¸ì§€ì— ì¶”ê°€
 	//
-	//imshow("add_color circle",output);//¹®Á¦°¡ ÀÖ´Â ºÎºĞ Á¡¼± ¿øÀ¸·Î Ç¥ÇöÇÑ »çÁø
-	//area_sum = area_sum / count;//±â¾îÀÇ Æò±Õ ¸éÀû ±¸ÇÏ±â
-	//imshow("color contour", drawing_color);//¹®Á¦°¡ ¾ø´Â °æ¿ì ÃÊ·Ï»ö, ¹®Á¦°¡ ÀÖ´Â °æ¿ì »¡°£»ö Ã³¸®ÇÑ »çÁø
+	//imshow("add_color circle",output);//ë¬¸ì œê°€ ìˆëŠ” ë¶€ë¶„ ì ì„  ì›ìœ¼ë¡œ í‘œí˜„í•œ ì‚¬ì§„
+	//area_sum = area_sum / count;//ê¸°ì–´ì˜ í‰ê·  ë©´ì  êµ¬í•˜ê¸°
+	//imshow("color contour", drawing_color);//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš° ì´ˆë¡ìƒ‰, ë¬¸ì œê°€ ìˆëŠ” ê²½ìš° ë¹¨ê°„ìƒ‰ ì²˜ë¦¬í•œ ì‚¬ì§„
 	//
-	//printf("Teeth numbers: %d\n", count);//ÀÌ»¡ °³¼ö Ãâ·Â
-	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû Ãâ·Â
-	//printf("Defective Teeth: %d\n",fail_count);//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãâ·Â
+	//printf("Teeth numbers: %d\n", count);//ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
+	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ì¶œë ¥
+	//printf("Defective Teeth: %d\n",fail_count);//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
 	//if (fail_count>0) {
-	//	printf("Quality: FAIL\n\n");//¹®Á¦°¡ ÀÖ´Â °æ¿ì
+	//	printf("Quality: FAIL\n\n");//ë¬¸ì œê°€ ìˆëŠ” ê²½ìš°
 	//}
 	//else if (fail_count == 0) {
-	//	printf("Quality: PASS\n\n");//¹®Á¦°¡ ¾ø´Â °æ¿ì
+	//	printf("Quality: PASS\n\n");//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš°
 	//}
 	
 
-	//±â¾î 2
+	//ê¸°ì–´ 2
 	src = cv::imread("Gear2.jpg", 0);
-	anchor = Point(src.cols / 2 - 16, src.rows / 2 - 5);//¿øÀÇ Áß½ÉÁ¡
+	anchor = Point(src.cols / 2 - 16, src.rows / 2 - 5);//ì›ì˜ ì¤‘ì‹¬ì 
 	r1 = 169;
 	r2 = 140;
 	r3 = 70;
 	FilterandContour(src, anchor, r1, r2, r3, 2);
-	//// ±â¾î 2
+	//// ê¸°ì–´ 2
 	//src = cv::imread("Gear2.jpg", 0);
 
-	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary º¯È¯, ÀÓÀÇ·Î threshold °ª 128¼³Á¤
-	//imshow("binary_2", binary);//±â¾î 2 binary °á°ú º¸±â
+	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary ë³€í™˜, ì„ì˜ë¡œ threshold ê°’ 128ì„¤ì •
+	//imshow("binary_2", binary);//ê¸°ì–´ 2 binary ê²°ê³¼ ë³´ê¸°
 
-	//anchor = Point(binary.cols / 2 - 16, binary.rows / 2 -5);//¿øÀÇ Áß½ÉÁ¡
+	//anchor = Point(binary.cols / 2 - 16, binary.rows / 2 -5);//ì›ì˜ ì¤‘ì‹¬ì 
 
-	//circle(binary, anchor, 169, 0, -2, LINE_8, 0);//°ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_2", binary);//binaryÃ³¸®ÇÑ »çÁø¿¡ °ËÀº»ö ¿øÀ» Ãß°¡ÇØ ÀÌ»¡¸¸ º¸ÀÌµµ·Ï ÇÑ »çÁø
+	//circle(binary, anchor, 169, 0, -2, LINE_8, 0);//ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_2", binary);//binaryì²˜ë¦¬í•œ ì‚¬ì§„ì— ê²€ì€ìƒ‰ ì›ì„ ì¶”ê°€í•´ ì´ë¹¨ë§Œ ë³´ì´ë„ë¡ í•œ ì‚¬ì§„
 
 	///// Find contours
 	//findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 
 	///// Draw all contours excluding holes
-	//Mat drawing_1(binary.size(), CV_8U, Scalar(255));//contour °á°ú¸¦ º¸±â À§ÇØ, Èò»ö ¹è°æ
-	//drawContours(drawing_1, contours, -1, Scalar(0), 2);//ÀÌ»¡ÀÇ Å×µÎ¸®¸¸ °ËÀº»öÀ¸·Î Ç¥Çö
+	//Mat drawing_1(binary.size(), CV_8U, Scalar(255));//contour ê²°ê³¼ë¥¼ ë³´ê¸° ìœ„í•´, í°ìƒ‰ ë°°ê²½
+	//drawContours(drawing_1, contours, -1, Scalar(0), 2);//ì´ë¹¨ì˜ í…Œë‘ë¦¬ë§Œ ê²€ì€ìƒ‰ìœ¼ë¡œ í‘œí˜„
 	//imshow("countour_2", drawing_1);
 
-	//count = 0;//ÀÌ»¡ °³¼ö
-	//fail_count = 0;//¹®Á¦°¡ ÀÖ´Â ±â¾îÀÇ ¼ö
-	//area_sum = 0;//ÀüÃ¼ ±â¾îÀÇ ¸éÀû
+	//count = 0;//ì´ë¹¨ ê°œìˆ˜
+	//fail_count = 0;//ë¬¸ì œê°€ ìˆëŠ” ê¸°ì–´ì˜ ìˆ˜
+	//area_sum = 0;//ì „ì²´ ê¸°ì–´ì˜ ë©´ì 
 	//
-	//Mat drawing_color_1 = Mat::zeros(binary.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat drawing_color_1 = Mat::zeros(binary.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	//Mat output_1 = Mat::zeros(src.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat output_1 = Mat::zeros(src.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	////±â¾î »ö±ò rgb·Î Àû¿ëÇÏ±â
+	////ê¸°ì–´ ìƒ‰ê¹” rgbë¡œ ì ìš©í•˜ê¸°
 	//for (int i = 0; i < output_1.rows; i++) {
 	//	for (int k = 0; k < output_1.cols; k++) {
 	//		if (src.at<uchar>(i, k) > 200) {
@@ -384,11 +456,11 @@ void main()
 	//	}
 	//}
 
-	//circle(output_1, anchor, 140, Scalar(120, 120, 120), -2, LINE_8, 0);//Áß°£ Å©±â È¸»ö ¿ø ±×¸®±â
-	//circle(output_1, anchor, 70, Scalar(0, 0, 0), -2, LINE_8, 0);//Á¦ÀÏÀÛÀº °ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_output", output_1);//rgb·Î ¹Ù²Û »çÁø
+	//circle(output_1, anchor, 140, Scalar(120, 120, 120), -2, LINE_8, 0);//ì¤‘ê°„ í¬ê¸° íšŒìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//circle(output_1, anchor, 70, Scalar(0, 0, 0), -2, LINE_8, 0);//ì œì¼ì‘ì€ ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_output", output_1);//rgbë¡œ ë°”ê¾¼ ì‚¬ì§„
 
-	////¹è°æÀ» Èò»öÀ¸·Î º¯°æÇÏ±â
+	////ë°°ê²½ì„ í°ìƒ‰ìœ¼ë¡œ ë³€ê²½í•˜ê¸°
 	//for (int i = 0; i < output_1.rows; i++) {
 	//	for (int k = 0; k < output_1.cols; k++) {
 	//		// Invert each channel (Blue, Green, Red)
@@ -404,13 +476,13 @@ void main()
 
 	//for (int i = 0; i < contours.size(); i++)
 	//{
-	//	count++;//ÀÌ»¡ °³¼ö Ãß°¡
-	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//ÇØ´ç ±â¾î ÀÌ»¡ÀÇ ¸éÀû°ú ±æÀÌ¸¦ Ãâ·Â
+	//	count++;//ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//í•´ë‹¹ ê¸°ì–´ ì´ë¹¨ì˜ ë©´ì ê³¼ ê¸¸ì´ë¥¼ ì¶œë ¥
 
-	//	if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
-	//		fail_count++;//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãß°¡
-	//		contourColor = Scalar(0, 0, 255); // »¡°£»ö (BGR ¼ø¼­)
-	//		//Á¡¼± ¿øÀÇ Áß½É ÁÂÇ¥ ±¸ÇÏ±â
+	//	if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
+	//		fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//		contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
+	//		//ì ì„  ì›ì˜ ì¤‘ì‹¬ ì¢Œí‘œ êµ¬í•˜ê¸°
 	//		if (contourArea(contours[i]) < 400) {
 	//			center = (contours[i][contours[i].size() - 1] + contours[i][0]) / 2;
 	//		}
@@ -418,23 +490,23 @@ void main()
 	//			center = (contours[i][contours[i].size() - 11]);
 	//		}
 	//		for (int num = 0; num < num_points; num++) {
-	//			//¿ø Å×µÎ¸® Á¡ °è»ê
+	//			//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
 	//			angle = 2 * CV_PI * num / num_points;
 	//			x = center.x + radius * cos(angle);
 	//			y = center.y + radius * sin(angle);
 
-	//			//³ë¶õ»ö ¿ø ±×¸®±â
+	//			//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
 	//			circle(output_1, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
 	//		}
 	//	}
 	//	else {
-	//		contourColor = Scalar(0, 255, 0); // ÃÊ·Ï»ö (BGR ¼ø¼­)
+	//		contourColor = Scalar(0, 255, 0); // ì´ˆë¡ìƒ‰ (BGR ìˆœì„œ)
 	//	}
 
-	//	area_sum += contourArea(contours[i]); // ÀüÃ¼ ¸éÀû ±¸ÇÏ±â
+	//	area_sum += contourArea(contours[i]); // ì „ì²´ ë©´ì  êµ¬í•˜ê¸°
 
-	//	// À±°û¼± ±×¸®±â
-	//	drawContours(drawing_color_1, contours, i, contourColor, 2); // i ¹øÂ° À±°û¼±¿¡ ´ëÇØ »öÀ» ÁöÁ¤ÇÏ¿© ±×¸®±â
+	//	// ìœ¤ê³½ì„  ê·¸ë¦¬ê¸°
+	//	drawContours(drawing_color_1, contours, i, contourColor, 2); // i ë²ˆì§¸ ìœ¤ê³½ì„ ì— ëŒ€í•´ ìƒ‰ì„ ì§€ì •í•˜ì—¬ ê·¸ë¦¬ê¸°
 
 	//}
 	//Mat add_text_1 = drawing_color_1.clone();
@@ -442,7 +514,7 @@ void main()
 	//for (int i = 0; i < contours.size(); i++)
 	//{
 
-	//	if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
+	//	if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
 	//		textColor = Scalar(0, 0, 255);
 
 	//	}
@@ -452,55 +524,62 @@ void main()
 
 	//	text_point = contours[i][0];
 	//	std::string area_text = std::to_string((int)contourArea(contours[i]));
-	//	putText(add_text_1, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ¸éÀûÀ» ÀÌ¹ÌÁö¿¡ Ç¥½Ã
+	//	putText(add_text_1, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ë©´ì ì„ ì´ë¯¸ì§€ì— í‘œì‹œ
 
 	//}
 
 	//imshow("add_text_2", add_text_1);
 
-	//imshow("add_color circle_2", output_1);//¹®Á¦°¡ ÀÖ´Â ºÎºĞ Á¡¼± ¿øÀ¸·Î Ç¥ÇöÇÑ »çÁø
-	//area_sum = area_sum / count;//±â¾îÀÇ Æò±Õ ¸éÀû ±¸ÇÏ±â
-	//imshow("color contour_2", drawing_color_1);//¹®Á¦°¡ ¾ø´Â °æ¿ì ÃÊ·Ï»ö, ¹®Á¦°¡ ÀÖ´Â °æ¿ì »¡°£»ö Ã³¸®ÇÑ »çÁø
+	//imshow("add_color circle_2", output_1);//ë¬¸ì œê°€ ìˆëŠ” ë¶€ë¶„ ì ì„  ì›ìœ¼ë¡œ í‘œí˜„í•œ ì‚¬ì§„
+	//area_sum = area_sum / count;//ê¸°ì–´ì˜ í‰ê·  ë©´ì  êµ¬í•˜ê¸°
+	//imshow("color contour_2", drawing_color_1);//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš° ì´ˆë¡ìƒ‰, ë¬¸ì œê°€ ìˆëŠ” ê²½ìš° ë¹¨ê°„ìƒ‰ ì²˜ë¦¬í•œ ì‚¬ì§„
 
-	//printf("Teeth numbers: %d\n", count);//ÀÌ»¡ °³¼ö Ãâ·Â
-	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû Ãâ·Â
-	//printf("Defective Teeth: %d\n", fail_count);//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãâ·Â
+	//printf("Teeth numbers: %d\n", count);//ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
+	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ì¶œë ¥
+	//printf("Defective Teeth: %d\n", fail_count);//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
 	//if (fail_count > 0) {
-	//	printf("Quality: FAIL\n\n");//¹®Á¦°¡ ÀÖ´Â °æ¿ì
+	//	printf("Quality: FAIL\n\n");//ë¬¸ì œê°€ ìˆëŠ” ê²½ìš°
 	//}
 	//else if (fail_count == 0) {
-	//	printf("Quality: PASS\n\n");//¹®Á¦°¡ ¾ø´Â °æ¿ì
+	//	printf("Quality: PASS\n\n");//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš°
 	//}
 
-	//// ±â¾î 3
+	//ê¸°ì–´ 3
+	src = cv::imread("Gear3.jpg", 0);
+	anchor = Point(src.cols / 2 + 22, src.rows / 2 - 15);//ì›ì˜ ì¤‘ì‹¬ì 
+	r1 = 187;
+	r2 = 140;
+	r3 = 70;
+	FilterandContour(src, anchor, r1, r2, r3, 3);
+	//// ê¸°ì–´ 3
 	//src = cv::imread("Gear3.jpg", 0);
 
-	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary º¯È¯, ÀÓÀÇ·Î threshold °ª 128¼³Á¤
-	//imshow("binary_3", binary);//±â¾î 3 binary °á°ú º¸±â
+	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary ë³€í™˜, ì„ì˜ë¡œ threshold ê°’ 128ì„¤ì •
+	//imshow("binary_3", binary);//ê¸°ì–´ 3 binary ê²°ê³¼ ë³´ê¸°
 
-	//anchor = Point(binary.cols / 2 +22, binary.rows / 2 - 15);//¿øÀÇ Áß½ÉÁ¡
+	//anchor = Point(binary.cols / 2 +22, binary.rows / 2 - 15);//ì›ì˜ ì¤‘ì‹¬ì 
 
-	//circle(binary, anchor, 187, 0, -2, LINE_8, 0);//°ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_3", binary);//binaryÃ³¸®ÇÑ »çÁø¿¡ °ËÀº»ö ¿øÀ» Ãß°¡ÇØ ÀÌ»¡¸¸ º¸ÀÌµµ·Ï ÇÑ »çÁø
+	//circle(binary, anchor, 187, 0, -2, LINE_8, 0);//ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_3", binary);//binaryì²˜ë¦¬í•œ ì‚¬ì§„ì— ê²€ì€ìƒ‰ ì›ì„ ì¶”ê°€í•´ ì´ë¹¨ë§Œ ë³´ì´ë„ë¡ í•œ ì‚¬ì§„
 
 	///// Find contours
 	//findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 
 	///// Draw all contours excluding holes
-	//Mat drawing_2(binary.size(), CV_8U, Scalar(255));//contour °á°ú¸¦ º¸±â À§ÇØ, Èò»ö ¹è°æ
-	//drawContours(drawing_2, contours, -1, Scalar(0), 2);//ÀÌ»¡ÀÇ Å×µÎ¸®¸¸ °ËÀº»öÀ¸·Î Ç¥Çö
+	//Mat drawing_2(binary.size(), CV_8U, Scalar(255));//contour ê²°ê³¼ë¥¼ ë³´ê¸° ìœ„í•´, í°ìƒ‰ ë°°ê²½
+	//drawContours(drawing_2, contours, -1, Scalar(0), 2);//ì´ë¹¨ì˜ í…Œë‘ë¦¬ë§Œ ê²€ì€ìƒ‰ìœ¼ë¡œ í‘œí˜„
 	//imshow("countour_3", drawing_2);
 
-	//count = 0;//ÀÌ»¡ °³¼ö
-	//fail_count = 0;//¹®Á¦°¡ ÀÖ´Â ±â¾îÀÇ ¼ö
-	//area_sum = 0;//ÀüÃ¼ ±â¾îÀÇ ¸éÀû
+	//count = 0;//ì´ë¹¨ ê°œìˆ˜
+	//fail_count = 0;//ë¬¸ì œê°€ ìˆëŠ” ê¸°ì–´ì˜ ìˆ˜
+	//area_sum = 0;//ì „ì²´ ê¸°ì–´ì˜ ë©´ì 
 
-	//Mat drawing_color_2 = Mat::zeros(binary.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat drawing_color_2 = Mat::zeros(binary.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	//Mat output_2 = Mat::zeros(src.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat output_2 = Mat::zeros(src.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	////±â¾î »ö±ò rgb·Î Àû¿ëÇÏ±â
+	////ê¸°ì–´ ìƒ‰ê¹” rgbë¡œ ì ìš©í•˜ê¸°
 	//for (int i = 0; i < output_2.rows; i++) {
 	//	for (int k = 0; k < output_2.cols; k++) {
 	//		if (src.at<uchar>(i, k) > 200) {
@@ -517,11 +596,11 @@ void main()
 	//	}
 	//}
 
-	//circle(output_2, anchor, 140, Scalar(120, 120, 120), -2, LINE_8, 0);//Áß°£ Å©±â È¸»ö ¿ø ±×¸®±â
-	//circle(output_2, anchor, 70, Scalar(0, 0, 0), -2, LINE_8, 0);//Á¦ÀÏÀÛÀº °ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_output_3", output_2);//rgb·Î ¹Ù²Û »çÁø
+	//circle(output_2, anchor, 140, Scalar(120, 120, 120), -2, LINE_8, 0);//ì¤‘ê°„ í¬ê¸° íšŒìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//circle(output_2, anchor, 70, Scalar(0, 0, 0), -2, LINE_8, 0);//ì œì¼ì‘ì€ ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_output_3", output_2);//rgbë¡œ ë°”ê¾¼ ì‚¬ì§„
 
-	////¹è°æÀ» Èò»öÀ¸·Î º¯°æÇÏ±â
+	////ë°°ê²½ì„ í°ìƒ‰ìœ¼ë¡œ ë³€ê²½í•˜ê¸°
 	//for (int i = 0; i < output_2.rows; i++) {
 	//	for (int k = 0; k < output_2.cols; k++) {
 	//		// Invert each channel (Blue, Green, Red)
@@ -537,15 +616,15 @@ void main()
 
 	//for (int i = 0; i < contours.size(); i++)
 	//{
-	//	count++;//ÀÌ»¡ °³¼ö Ãß°¡
-	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//ÇØ´ç ±â¾î ÀÌ»¡ÀÇ ¸éÀû°ú ±æÀÌ¸¦ Ãâ·Â
+	//	count++;//ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//í•´ë‹¹ ê¸°ì–´ ì´ë¹¨ì˜ ë©´ì ê³¼ ê¸¸ì´ë¥¼ ì¶œë ¥
 
 
 	//	if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {
-	//		fail_count++;//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãß°¡
-	//		contourColor = Scalar(0, 0, 255); // »¡°£»ö (BGR ¼ø¼­)
+	//		fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//		contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
 
-	//		//Á¡¼± ¿øÀÇ Áß½É ÁÂÇ¥ ±¸ÇÏ±â
+	//		//ì ì„  ì›ì˜ ì¤‘ì‹¬ ì¢Œí‘œ êµ¬í•˜ê¸°
 	//		if (contourArea(contours[i]) < 1000) {
 	//			center = (contours[i][contours[i].size() - 11]);
 	//		}
@@ -559,23 +638,23 @@ void main()
 	//			center = (contours[i][30] + contours[i][0]) / 2;
 	//		}
 	//		for (int num = 0; num < num_points; num++) {
-	//			//¿ø Å×µÎ¸® Á¡ °è»ê
+	//			//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
 	//			angle = 2 * CV_PI * num / num_points;
 	//			x = center.x + radius * cos(angle);
 	//			y = center.y + radius * sin(angle);
 
-	//			//³ë¶õ»ö ¿ø ±×¸®±â
+	//			//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
 	//			circle(output_2, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
 	//		}
 	//	}
 	//	else {
-	//		contourColor = Scalar(0, 255, 0); // ÃÊ·Ï»ö (BGR ¼ø¼­)
+	//		contourColor = Scalar(0, 255, 0); // ì´ˆë¡ìƒ‰ (BGR ìˆœì„œ)
 	//	}
 
-	//	area_sum += contourArea(contours[i]); // ÀüÃ¼ ¸éÀû ±¸ÇÏ±â
+	//	area_sum += contourArea(contours[i]); // ì „ì²´ ë©´ì  êµ¬í•˜ê¸°
 
-	//	// À±°û¼± ±×¸®±â
-	//	drawContours(drawing_color_2, contours, i, contourColor, 2); // i ¹øÂ° À±°û¼±¿¡ ´ëÇØ »öÀ» ÁöÁ¤ÇÏ¿© ±×¸®±â
+	//	// ìœ¤ê³½ì„  ê·¸ë¦¬ê¸°
+	//	drawContours(drawing_color_2, contours, i, contourColor, 2); // i ë²ˆì§¸ ìœ¤ê³½ì„ ì— ëŒ€í•´ ìƒ‰ì„ ì§€ì •í•˜ì—¬ ê·¸ë¦¬ê¸°
 
 	//}
 	//Mat add_text_2 = drawing_color_2.clone();
@@ -583,7 +662,7 @@ void main()
 	//for (int i = 0; i < contours.size(); i++)
 	//{
 
-	//	if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
+	//	if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
 	//		textColor = Scalar(0, 0, 255);
 
 	//	}
@@ -593,55 +672,61 @@ void main()
 
 	//	text_point = contours[i][0];
 	//	std::string area_text = std::to_string((int)contourArea(contours[i]));
-	//	putText(add_text_2, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ¸éÀûÀ» ÀÌ¹ÌÁö¿¡ Ç¥½Ã
+	//	putText(add_text_2, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ë©´ì ì„ ì´ë¯¸ì§€ì— í‘œì‹œ
 
 	//}
 
 	//imshow("add_text_3", add_text_2);
 
-	//imshow("add_color circle_3", output_2);//¹®Á¦°¡ ÀÖ´Â ºÎºĞ Á¡¼± ¿øÀ¸·Î Ç¥ÇöÇÑ »çÁø
-	//area_sum = area_sum / count;//±â¾îÀÇ Æò±Õ ¸éÀû ±¸ÇÏ±â
-	//imshow("color contour_3", drawing_color_2);//¹®Á¦°¡ ¾ø´Â °æ¿ì ÃÊ·Ï»ö, ¹®Á¦°¡ ÀÖ´Â °æ¿ì »¡°£»ö Ã³¸®ÇÑ »çÁø
+	//imshow("add_color circle_3", output_2);//ë¬¸ì œê°€ ìˆëŠ” ë¶€ë¶„ ì ì„  ì›ìœ¼ë¡œ í‘œí˜„í•œ ì‚¬ì§„
+	//area_sum = area_sum / count;//ê¸°ì–´ì˜ í‰ê·  ë©´ì  êµ¬í•˜ê¸°
+	//imshow("color contour_3", drawing_color_2);//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš° ì´ˆë¡ìƒ‰, ë¬¸ì œê°€ ìˆëŠ” ê²½ìš° ë¹¨ê°„ìƒ‰ ì²˜ë¦¬í•œ ì‚¬ì§„
 
-	//printf("Teeth numbers: %d\n", count);//ÀÌ»¡ °³¼ö Ãâ·Â
-	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû Ãâ·Â
-	//printf("Defective Teeth: %d\n", fail_count);//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãâ·Â
+	//printf("Teeth numbers: %d\n", count);//ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
+	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ì¶œë ¥
+	//printf("Defective Teeth: %d\n", fail_count);//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
 	//if (fail_count > 0) {
-	//	printf("Quality: FAIL\n\n");//¹®Á¦°¡ ÀÖ´Â °æ¿ì
+	//	printf("Quality: FAIL\n\n");//ë¬¸ì œê°€ ìˆëŠ” ê²½ìš°
 	//}
 	//else if (fail_count == 0) {
-	//	printf("Quality: PASS\n\n");//¹®Á¦°¡ ¾ø´Â °æ¿ì
+	//	printf("Quality: PASS\n\n");//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš°
 	//}
-
-	//// ±â¾î 4
+	//ê¸°ì–´ 3
+	src = cv::imread("Gear4.jpg", 0);
+	anchor = Point(src.cols / 2 - 74, src.rows / 2 - 32);//ì›ì˜ ì¤‘ì‹¬ì 
+	r1 = 188;
+	r2 = 140;
+	r3 = 70;
+	FilterandContour(src, anchor, r1, r2, r3, 4);
+	//// ê¸°ì–´ 4
 	//src = cv::imread("Gear4.jpg", 0);
 
-	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary º¯È¯, ÀÓÀÇ·Î threshold °ª 128¼³Á¤
-	//imshow("binary_4", binary);//±â¾î 4 binary °á°ú º¸±â
+	//threshold(src, binary, 128, 255, THRESH_BINARY);//binary ë³€í™˜, ì„ì˜ë¡œ threshold ê°’ 128ì„¤ì •
+	//imshow("binary_4", binary);//ê¸°ì–´ 4 binary ê²°ê³¼ ë³´ê¸°
 
-	//anchor = Point(binary.cols / 2 -74, binary.rows / 2 - 32);//¿øÀÇ Áß½ÉÁ¡
+	//anchor = Point(binary.cols / 2 -74, binary.rows / 2 - 32);//ì›ì˜ ì¤‘ì‹¬ì 
 
-	//circle(binary, anchor, 188, 0, -2, LINE_8, 0);//°ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_4", binary);//binaryÃ³¸®ÇÑ »çÁø¿¡ °ËÀº»ö ¿øÀ» Ãß°¡ÇØ ÀÌ»¡¸¸ º¸ÀÌµµ·Ï ÇÑ »çÁø
+	//circle(binary, anchor, 188, 0, -2, LINE_8, 0);//ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_4", binary);//binaryì²˜ë¦¬í•œ ì‚¬ì§„ì— ê²€ì€ìƒ‰ ì›ì„ ì¶”ê°€í•´ ì´ë¹¨ë§Œ ë³´ì´ë„ë¡ í•œ ì‚¬ì§„
 
 	///// Find contours
 	//findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 
 	///// Draw all contours excluding holes
-	//Mat drawing_3(binary.size(), CV_8U, Scalar(255));//contour °á°ú¸¦ º¸±â À§ÇØ, Èò»ö ¹è°æ
-	//drawContours(drawing_3, contours, -1, Scalar(0), 2);//ÀÌ»¡ÀÇ Å×µÎ¸®¸¸ °ËÀº»öÀ¸·Î Ç¥Çö
+	//Mat drawing_3(binary.size(), CV_8U, Scalar(255));//contour ê²°ê³¼ë¥¼ ë³´ê¸° ìœ„í•´, í°ìƒ‰ ë°°ê²½
+	//drawContours(drawing_3, contours, -1, Scalar(0), 2);//ì´ë¹¨ì˜ í…Œë‘ë¦¬ë§Œ ê²€ì€ìƒ‰ìœ¼ë¡œ í‘œí˜„
 	//imshow("countour_4", drawing_3);
 
-	//count = 0;//ÀÌ»¡ °³¼ö
-	//fail_count = 0;//¹®Á¦°¡ ÀÖ´Â ±â¾îÀÇ ¼ö
-	//area_sum = 0;//ÀüÃ¼ ±â¾îÀÇ ¸éÀû
+	//count = 0;//ì´ë¹¨ ê°œìˆ˜
+	//fail_count = 0;//ë¬¸ì œê°€ ìˆëŠ” ê¸°ì–´ì˜ ìˆ˜
+	//area_sum = 0;//ì „ì²´ ê¸°ì–´ì˜ ë©´ì 
 
-	//Mat drawing_color_3 = Mat::zeros(binary.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat drawing_color_3 = Mat::zeros(binary.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	//Mat output_3 = Mat::zeros(src.size(), CV_8UC3); // »ö»óÀ» Àû¿ëÇÏ±â À§ÇØ CV_8UC3 ¼³Á¤
+	//Mat output_3 = Mat::zeros(src.size(), CV_8UC3); // ìƒ‰ìƒì„ ì ìš©í•˜ê¸° ìœ„í•´ CV_8UC3 ì„¤ì •
 
-	////±â¾î »ö±ò rgb·Î Àû¿ëÇÏ±â
+	////ê¸°ì–´ ìƒ‰ê¹” rgbë¡œ ì ìš©í•˜ê¸°
 	//for (int i = 0; i < output_3.rows; i++) {
 	//	for (int k = 0; k < output_3.cols; k++) {
 	//		if (src.at<uchar>(i, k) > 200) {
@@ -658,11 +743,11 @@ void main()
 	//	}
 	//}
 
-	//circle(output_3, anchor, 140, Scalar(120, 120, 120), -2, LINE_8, 0);//Áß°£ Å©±â È¸»ö ¿ø ±×¸®±â
-	//circle(output_3, anchor, 70, Scalar(0, 0, 0), -2, LINE_8, 0);//Á¦ÀÏÀÛÀº °ËÀº»ö ¿ø ±×¸®±â
-	//imshow("circle_fill_output", output_3);//rgb·Î ¹Ù²Û »çÁø
+	//circle(output_3, anchor, 140, Scalar(120, 120, 120), -2, LINE_8, 0);//ì¤‘ê°„ í¬ê¸° íšŒìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//circle(output_3, anchor, 70, Scalar(0, 0, 0), -2, LINE_8, 0);//ì œì¼ì‘ì€ ê²€ì€ìƒ‰ ì› ê·¸ë¦¬ê¸°
+	//imshow("circle_fill_output", output_3);//rgbë¡œ ë°”ê¾¼ ì‚¬ì§„
 
-	////¹è°æÀ» Èò»öÀ¸·Î º¯°æÇÏ±â
+	////ë°°ê²½ì„ í°ìƒ‰ìœ¼ë¡œ ë³€ê²½í•˜ê¸°
 	//for (int i = 0; i < output_3.rows; i++) {
 	//	for (int k = 0; k < output_3.cols; k++) {
 	//		// Invert each channel (Blue, Green, Red)
@@ -679,40 +764,40 @@ void main()
 
 	//for (int i = 0; i < contours.size(); i++)
 	//{
-	//	count++;//ÀÌ»¡ °³¼ö Ãß°¡
-	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//ÇØ´ç ±â¾î ÀÌ»¡ÀÇ ¸éÀû°ú ±æÀÌ¸¦ Ãâ·Â
+	//	count++;//ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//	printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//í•´ë‹¹ ê¸°ì–´ ì´ë¹¨ì˜ ë©´ì ê³¼ ê¸¸ì´ë¥¼ ì¶œë ¥
 
 
-	//	if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {//¸éÀûÀÌ 1000ÀÌÇÏ°Å³ª 1500 ÀÌ»óÀÏ ¶§
-	//		fail_count++;//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãß°¡
-	//		contourColor = Scalar(0, 0, 255); // »¡°£»ö (BGR ¼ø¼­)
+	//	if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {//ë©´ì ì´ 1000ì´í•˜ê±°ë‚˜ 1500 ì´ìƒì¼ ë•Œ
+	//		fail_count++;//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶”ê°€
+	//		contourColor = Scalar(0, 0, 255); // ë¹¨ê°„ìƒ‰ (BGR ìˆœì„œ)
 
-	//		//Á¡¼± Å×µÎ¸®¸¦ °¡Áø ¿øÀÇ Áß½ÉÁ¡
+	//		//ì ì„  í…Œë‘ë¦¬ë¥¼ ê°€ì§„ ì›ì˜ ì¤‘ì‹¬ì 
 	//		if (contourArea(contours[i]) <1800) {
 	//			center = (contours[i][30] + contours[i][0]) / 2;
 	//		}
 	//		else {
 	//			center= (contours[i][35] + contours[i][0]) / 2;
 	//		}
-	//		//Á¡¼± ¿ø ±×¸®±â
+	//		//ì ì„  ì› ê·¸ë¦¬ê¸°
 	//		for (int num = 0; num < num_points; num++) {
-	//			//¿ø Å×µÎ¸® Á¡ °è»ê
+	//			//ì› í…Œë‘ë¦¬ ì  ê³„ì‚°
 	//			angle = 2 * CV_PI * num / num_points;
-	//			x = center.x + radius * cos(angle);//Á¡ÀÇ xÁÂÇ¥
-	//			y = center.y + radius * sin(angle);//Á¡ÀÇ yÁÂÇ¥
+	//			x = center.x + radius * cos(angle);//ì ì˜ xì¢Œí‘œ
+	//			y = center.y + radius * sin(angle);//ì ì˜ yì¢Œí‘œ
 
-	//			//³ë¶õ»ö ¿ø ±×¸®±â
+	//			//ë…¸ë€ìƒ‰ ì› ê·¸ë¦¬ê¸°
 	//			circle(output_3, Point(x, y), 3, Scalar(0, 255, 255), -1, LINE_8, 0);
 	//		}
 	//	}
 	//	else {
-	//		contourColor = Scalar(0, 255, 0); // ÃÊ·Ï»ö (BGR ¼ø¼­)
+	//		contourColor = Scalar(0, 255, 0); // ì´ˆë¡ìƒ‰ (BGR ìˆœì„œ)
 	//	}
 
-	//	area_sum += contourArea(contours[i]); // ÀüÃ¼ ¸éÀû ±¸ÇÏ±â
+	//	area_sum += contourArea(contours[i]); // ì „ì²´ ë©´ì  êµ¬í•˜ê¸°
 
-	//	// À±°û¼± ±×¸®±â
-	//	drawContours(drawing_color_3, contours, i, contourColor, 2); // i ¹øÂ° À±°û¼±¿¡ ´ëÇØ »öÀ» ÁöÁ¤ÇÏ¿© ±×¸®±â
+	//	// ìœ¤ê³½ì„  ê·¸ë¦¬ê¸°
+	//	drawContours(drawing_color_3, contours, i, contourColor, 2); // i ë²ˆì§¸ ìœ¤ê³½ì„ ì— ëŒ€í•´ ìƒ‰ì„ ì§€ì •í•˜ì—¬ ê·¸ë¦¬ê¸°
 
 	//}
 
@@ -722,7 +807,7 @@ void main()
 	//for (int i = 0; i < contours.size(); i++)
 	//{
 
-	//	if (contourArea(contours[i]) < 1000) {//±â¾î ¸éÀûÀÌ 1000º¸´Ù ÀÛÀº °æ¿ì
+	//	if (contourArea(contours[i]) < 1000) {//ê¸°ì–´ ë©´ì ì´ 1000ë³´ë‹¤ ì‘ì€ ê²½ìš°
 	//		textColor = Scalar(0, 0, 255);
 
 	//	}
@@ -732,24 +817,24 @@ void main()
 
 	//	text_point = contours[i][0];
 	//	std::string area_text = std::to_string((int)contourArea(contours[i]));
-	//	putText(add_text_3, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ¸éÀûÀ» ÀÌ¹ÌÁö¿¡ Ç¥½Ã
+	//	putText(add_text_3, area_text, text_point, FONT_HERSHEY_SIMPLEX, 0.7, textColor, 1, LINE_8); // ë©´ì ì„ ì´ë¯¸ì§€ì— í‘œì‹œ
 
 	//}
 
 	//imshow("add_text_4", add_text_3);
 
-	//imshow("add_color circle_4", output_3);//¹®Á¦°¡ ÀÖ´Â ºÎºĞ Á¡¼± ¿øÀ¸·Î Ç¥ÇöÇÑ »çÁø
-	//area_sum = area_sum / count;//±â¾îÀÇ Æò±Õ ¸éÀû ±¸ÇÏ±â
-	//imshow("color contour_4", drawing_color_3);//¹®Á¦°¡ ¾ø´Â °æ¿ì ÃÊ·Ï»ö, ¹®Á¦°¡ ÀÖ´Â °æ¿ì »¡°£»ö Ã³¸®ÇÑ »çÁø
+	//imshow("add_color circle_4", output_3);//ë¬¸ì œê°€ ìˆëŠ” ë¶€ë¶„ ì ì„  ì›ìœ¼ë¡œ í‘œí˜„í•œ ì‚¬ì§„
+	//area_sum = area_sum / count;//ê¸°ì–´ì˜ í‰ê·  ë©´ì  êµ¬í•˜ê¸°
+	//imshow("color contour_4", drawing_color_3);//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš° ì´ˆë¡ìƒ‰, ë¬¸ì œê°€ ìˆëŠ” ê²½ìš° ë¹¨ê°„ìƒ‰ ì²˜ë¦¬í•œ ì‚¬ì§„
 
-	//printf("Teeth numbers: %d\n", count);//ÀÌ»¡ °³¼ö Ãâ·Â
-	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ÀÌ»¡ÀÇ ÀüÃ¼ ¸éÀû Ãâ·Â
-	//printf("Defective Teeth: %d\n", fail_count);//¹®Á¦°¡ ÀÖ´Â ÀÌ»¡ °³¼ö Ãâ·Â
+	//printf("Teeth numbers: %d\n", count);//ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
+	//printf("Avg. Teeth Area: %.2f\n", area_sum);//ì´ë¹¨ì˜ ì „ì²´ ë©´ì  ì¶œë ¥
+	//printf("Defective Teeth: %d\n", fail_count);//ë¬¸ì œê°€ ìˆëŠ” ì´ë¹¨ ê°œìˆ˜ ì¶œë ¥
 	//if (fail_count > 0) {
-	//	printf("Quality: FAIL\n\n");//¹®Á¦°¡ ÀÖ´Â °æ¿ì
+	//	printf("Quality: FAIL\n\n");//ë¬¸ì œê°€ ìˆëŠ” ê²½ìš°
 	//}
 	//else if (fail_count == 0) {
-	//	printf("Quality: PASS\n\n");//¹®Á¦°¡ ¾ø´Â °æ¿ì
+	//	printf("Quality: PASS\n\n");//ë¬¸ì œê°€ ì—†ëŠ” ê²½ìš°
 	//}
 
 
