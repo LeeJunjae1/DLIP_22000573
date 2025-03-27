@@ -44,7 +44,7 @@ void RGB_Thresh(Mat& src, Mat& output, int threshold) {//RGB이면서 특정값�
 	}
 }
 
-void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
+void FilterandContour(Mat& src, int idx) {
 	Mat binary;
 
 	threshold(src, binary, 128, 255, THRESH_BINARY);//binary 변환, 임의로 threshold 값 128설정
@@ -52,17 +52,36 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 
 	vector<vector<Point>> contours;//기어 이빨을 확인하기 위한 contour
 
-	circle(binary, anchor, r1, 0, -2, LINE_8, 0);//검은색 원 그리기
-	cv::imshow("circle_fill[" + to_string(idx) + "]", binary);//binary처리한 사진에 검은색 원을 추가해 이빨만 보이도록 한 사진
-
 	/// Find contours
 	findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
+	float outerRadius = 0;//이끝원 지름
+	Point2f center;//기어의 중심 좌표
+	for (const auto& contour : contours) {
+		float radius;//contour 원의 반지름
+		minEnclosingCircle(contour, center, radius);
+
+		if (radius > outerRadius) {
+			outerRadius = radius;  // 가장 큰 원(기어 전체) 선택
+		}
+	}
+
+	// 이빨을 제외한 이뿌리 원 반지름 계산
+	float dedendumRadius = outerRadius * 0.81;  // 이빨 크기 고려하여 조정
+
+	// 이뿌리 원을 검게 칠해서 기어의 이빨만 보이도록 함
+	circle(binary, center, static_cast<int>(dedendumRadius), Scalar(0), -1);
+	cv::imshow("gear_teeth_only[" + to_string(idx) + "]", binary);
+
+	/// Find contours
+	findContours(binary, contours, RETR_LIST, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 	/// Draw all contours excluding holes
 	Mat drawing(binary.size(), CV_8U, Scalar(255));//contour 결과를 보기 위해, 흰색 배경
 	cv::drawContours(drawing, contours, -1, Scalar(0), 2);//이빨의 테두리만 검은색으로 표현
 	cv::imshow("countour[" + to_string(idx) + "]", drawing);
+
+	
 
 	int count = 0;//이빨 개수
 	int fail_count = 0;//문제가 있는 기어의 수
@@ -75,8 +94,8 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 
 	RGB_Thresh(src, output, 200);//RGB이면서 흰색과 검정색만 갖도록
 
-	circle(output, anchor, r2, Scalar(120, 120, 120), -2, LINE_8, 0);//중간 크기 회색 원 그리기
-	circle(output, anchor, r3, Scalar(0, 0, 0), -2, LINE_8, 0);//제일작은 검은색 원 그리기
+	circle(output, center, outerRadius * 0.6, Scalar(120, 120, 120), -2, LINE_8, 0);//중간 크기 회색 원 그리기
+	circle(output, center, outerRadius * 0.3, Scalar(0, 0, 0), -2, LINE_8, 0);//제일작은 검은색 원 그리기
 	cv::imshow("circle_fill_output[" + to_string(idx) + "]", output);//rgb로 바꾼 사진
 
 	inverse(output);//RGB inverse시키기
@@ -84,7 +103,7 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 	threshold(output, output, 200, 255, 2);//Threshold Truncated
 	cv::imshow("output[" + to_string(idx) + "]", output);
 
-	int radius = 32; // Circle radius
+	int radius = 32; // 점선 원 반지름
 	int num_points = 12;// Point 수
 	float angle = 0;//원을 그릴 각도
 	int x = 0;//원의 x좌표
@@ -103,7 +122,7 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 		count++;//이빨 개수 추가
 		printf(" * Contour[%d] -  Area OpenCV: %.2f - Length: %.2f \n", i, contourArea(contours[i]), arcLength(contours[i], true));//해당 기어 이빨의 면적과 길이를 출력
 
-		if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {
+		if (contourArea(contours[i]) < 1000 || contourArea(contours[i]) > 1500) {//문제가 있는 기어의 둘레
 			fail_count++;//문제가 있는 이빨 개수 추가
 			contourColor = Scalar(0, 0, 255); // 빨간색 (BGR 순서)
 			for (int num = 0; num < num_points; num++) {
@@ -141,8 +160,8 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 			textColor = Scalar(255, 255, 255);//흰색 글자
 		}
 
-		x = cx+(anchor.x-cx)*0.28;//글자를 적을 위치
-		y = cy+(anchor.y-cy)*0.28;//글자를 적을 위치
+		x = cx+(center.x-cx)*0.28;//글자를 적을 위치
+		y = cy+(center.y-cy)*0.28;//글자를 적을 위치
 
 		std::string area_text = std::to_string((int)contourArea(contours[i]));
 		cv::putText(add_text, area_text, Point(x-15,y), FONT_HERSHEY_SIMPLEX, 0.5, textColor, 1, LINE_8); // 면적을 이미지에 표시
@@ -159,7 +178,7 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 	printf("Teeth numbers: %d\n", count);//이빨 개수 출력
 	printf("Avg. Teeth Area: %.2f\n", area_sum);//이빨의 전체 면적 출력
 	printf("Defective Teeth: %d\n", fail_count);//문제가 있는 이빨 개수 출력
-	printf("Diameter of the gear: %d\n", r1);//이뿌리원 지름 출력
+	printf("Diameter of the gear: %.0f\n", dedendumRadius);//이뿌리원 지름 출력
 	if (fail_count > 0) {
 		printf("Quality: FAIL\n\n");//문제가 있는 경우
 	}
@@ -225,39 +244,22 @@ void main()
 	cv::Mat src;//행렬 생성
 	src = cv::imread("Gear1.jpg", 0);
 	process_image_and_display_histogram(src, 1);//히스토그램 보기
-	Point anchor = Point(src.cols / 2 - 16, src.rows / 2 - 68);//원의 중심점
-	int r1 = 169;//기어 이빨만 남길 원 반지름
-	int r2 = 140;//중간 크기의 원 반지름
-	int r3 = 70;//제일 작은 검은색 원 반지름
-	
-	FilterandContour(src, anchor, r1, r2, r3, 1);//contour 찾고 색 표현
+	FilterandContour(src, 1);//contour 찾고 색 표현
 
 	//기어 2
 	src = cv::imread("Gear2.jpg", 0);
 	process_image_and_display_histogram(src, 2);//히스토그램 보기
-	anchor = Point(src.cols / 2 - 16, src.rows / 2 - 5);//원의 중심점
-	r1 = 169;//기어 이빨만 남길 원 반지름
-	r2 = 140;//중간 크기의 원 반지름
-	r3 = 70;//제일 작은 검은색 원 반지름
-	FilterandContour(src, anchor, r1, r2, r3, 2);
+	FilterandContour(src, 2);
 
 	//기어 3
 	src = cv::imread("Gear3.jpg", 0);
 	process_image_and_display_histogram(src, 3);//히스토그램 보기
-	anchor = Point(src.cols / 2 + 22, src.rows / 2 - 15);//원의 중심점
-	r1 = 187;//기어 이빨만 남길 원 반지름
-	r2 = 140;//중간 크기의 원 반지름
-	r3 = 70;//제일 작은 검은색 원 반지름
-	FilterandContour(src, anchor, r1, r2, r3, 3);//contour 찾고 색 표현
+	FilterandContour(src, 3);//contour 찾고 색 표현
 
 	//기어 4
 	src = cv::imread("Gear4.jpg", 0);
 	process_image_and_display_histogram(src, 4);//히스토그램 보기
-	anchor = Point(src.cols / 2 - 74, src.rows / 2 - 32);//원의 중심점
-	r1 = 188;//기어 이빨만 남길 원
-	r2 = 140;//중간 크기의 원 반지름
-	r3 = 70;//제일 작은 검은색 원 반지름
-	FilterandContour(src, anchor, r1, r2, r3, 4);//contour 찾고 색 표현
+	FilterandContour(src, 4);//contour 찾고 색 표현
 
 	cv::waitKey(0);
 }
