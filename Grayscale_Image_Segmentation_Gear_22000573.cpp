@@ -159,12 +159,14 @@ void FilterandContour(Mat& src, Point anchor, int r1, int r2, int r3, int idx) {
 	printf("Teeth numbers: %d\n", count);//이빨 개수 출력
 	printf("Avg. Teeth Area: %.2f\n", area_sum);//이빨의 전체 면적 출력
 	printf("Defective Teeth: %d\n", fail_count);//문제가 있는 이빨 개수 출력
+	printf("Diameter of the gear: %d\n", r1);//이뿌리원 지름 출력
 	if (fail_count > 0) {
 		printf("Quality: FAIL\n\n");//문제가 있는 경우
 	}
 	else if (fail_count == 0) {
 		printf("Quality: PASS\n\n");//문제가 없는 경우
 	}
+	
 }
 
 // Function to calculate and display the histogram
