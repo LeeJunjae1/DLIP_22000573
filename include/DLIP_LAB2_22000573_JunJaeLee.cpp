@@ -15,14 +15,14 @@
 using namespace cv;
 using namespace std;
 
-Mat image;//¼±ÅÃÇÒ ÀÌ¹ÌÁö
-Point origin;//¸¶¿ì½º ÁÂÇ¥
-Rect selection;//¸¶¿ì½º ¼±ÅÃ ¿µ¿ª
+Mat image;//ì„ íƒí•  ì´ë¯¸ì§€
+Point origin;//ë§ˆìš°ìŠ¤ ì¢Œí‘œ
+Rect selection;//ë§ˆìš°ìŠ¤ ì„ íƒ ì˜ì—­
 bool selectObject = false;
 bool trackObject = false;
-//int hmin = 13, hmax = 60, smin = 70, smax = 200, vmin = 90, vmax = 200;//SAMPLE 1°ª
-//int hmin = 24, hmax = 101, smin = 40, smax = 255, vmin = 55, vmax = 255;
-int hmin = 110, hmax = 176, smin = 87, smax = 255, vmin =70, vmax = 255;//LAB2 ºĞÈ«»ö ¹°Ã¼ °ª
+//int hmin = 13, hmax = 60, smin = 70, smax = 200, vmin = 90, vmax = 200;//SAMPLE 1ê°’
+//int hmin = 24, hmax = 101, smin = 40, smax = 255, vmin = 55, vmax = 255;//LAB2 ë¯¼íŠ¸ìƒ‰ ë¬¼ì²´ ê°’
+int hmin = 110, hmax = 176, smin = 87, smax = 255, vmin =70, vmax = 255;//LAB2 ë¶„í™ìƒ‰ ë¬¼ì²´ ê°’
 VideoWriter save_video;
 
 /// On mouse event 
@@ -50,33 +50,33 @@ static void onMouse(int event, int x, int y, int, void*)
 		break;
 	}
 }
-void processVideo(const string& videoPath)
+void processVideo(const string& videoPath, int idx)
 {
 	Mat image_disp, hsv, hue, mask, dst, src, background, mask_src, mask_src2;
-	vector<vector<Point>> contours;//contourÇÒ ¿µ¿ª
+	vector<vector<Point>> contours;//contourí•  ì˜ì—­
 	Mat dst_track, dst_out, final_out;
 
 	VideoCapture cap(videoPath);
 	if (!cap.isOpened()) {
-		cout << "ºñµğ¿À¸¦ ¿­ ¼ö ¾ø½À´Ï´Ù: " << videoPath << endl;
+		cout << "ë¹„ë””ì˜¤ë¥¼ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: " << videoPath << endl;
 		return;
 	}
 
-	//ÀúÀåÇÒ ÀÌ¹ÌÁö ÇÁ·¹ÀÓ°ú ³Êºñ
+	//ì €ì¥í•  ì´ë¯¸ì§€ í”„ë ˆì„ê³¼ ë„ˆë¹„
 	int frame_width = (int)cap.get(CAP_PROP_FRAME_WIDTH);
 	int frame_height = (int)cap.get(CAP_PROP_FRAME_HEIGHT);
-	double fps = cap.get(CAP_PROP_FPS);//ÇØ´ç ÇÁ·¹ÀÓ
+	double fps = cap.get(CAP_PROP_FPS);//í•´ë‹¹ í”„ë ˆì„
 
-	int codec = VideoWriter::fourcc('X', 'V', 'I', 'D');//avi Çü½ÄÀ¸·Î ÀúÀå
-	string filename = "DLIP_LAB2_22000573_JunJaeLee_output.avi";  // ÀúÀåÆÄÀÏ ÀÌ¸§
+	int codec = VideoWriter::fourcc('X', 'V', 'I', 'D');//avi í˜•ì‹ìœ¼ë¡œ ì €ì¥
+	string filename = "DLIP_LAB2_22000573_JunJaeLee_output_[SAMPLE" + to_string(idx) + "].avi";  // ì €ì¥íŒŒì¼ ì´ë¦„
 
 	save_video.open(filename, codec, fps, Size(frame_width, frame_height), true);
 	if (!save_video.isOpened()) {
-		cout << "!!! VideoWriter ÃÊ±âÈ­ ½ÇÆĞ: ÆÄÀÏÀ» ¿­ ¼ö ¾ø½À´Ï´Ù." << endl;
+		cout << "!!! VideoWriter ì´ˆê¸°í™” ì‹¤íŒ¨: íŒŒì¼ì„ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << endl;
 		return;
 	}
 
-	// Æ®·¢¹Ù¿Í ¸¶¿ì½º Äİ¹é ¼³Á¤
+	// íŠ¸ë™ë°”ì™€ ë§ˆìš°ìŠ¤ ì½œë°± ì„¤ì •
 	namedWindow("Source", 0);
 	setMouseCallback("Source", onMouse, 0);
 	createTrackbar("Hmin", "Source", &hmin, 179);
@@ -87,43 +87,43 @@ void processVideo(const string& videoPath)
 	createTrackbar("Vmax", "Source", &vmax, 255);
 
 	int element_shape = MORPH_RECT;
-	int n = 7;//ÇÊÅÍ »çÀÌÁî ¹× morphology »çÀÌÁî
+	int n = 7;//í•„í„° ì‚¬ì´ì¦ˆ ë° morphology ì‚¬ì´ì¦ˆ
 	Mat element = getStructuringElement(element_shape, Size(n, n));
 
-	int cap_image = 0;//Ã³À½ ÀÌ¹ÌÁö¸¦ ÀúÀåÇÏ±â À§ÇÑ º¯¼ö
+	int cap_image = 0;//ì²˜ìŒ ì´ë¯¸ì§€ë¥¼ ì €ì¥í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
 
 	while (true)
 	{
 		if (!cap.read(src)) {
-			cout << "ÇÁ·¹ÀÓÀ» °¡Á®¿Ã ¼ö ¾ø½À´Ï´Ù.\n";
+			cout << "í”„ë ˆì„ì„ ê°€ì ¸ì˜¬ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n";
 			break;
 		}
 
 		//imshow("source video", src);
 
-		if (cap_image == 0) {//ÃÖÃÊ ÇÁ·¹ÀÓÀÏ¶§
-			src.copyTo(background);//ÃÖÃÊ ¹è°æÀÌ¹ÌÁö ÀúÀå
-			cap_image++;//count Áõ°¡ ½ÃÅ°±â
+		if (cap_image == 0) {//ìµœì´ˆ í”„ë ˆì„ì¼ë•Œ
+			src.copyTo(background);//ìµœì´ˆ ë°°ê²½ì´ë¯¸ì§€ ì €ì¥
+			cap_image++;//count ì¦ê°€ ì‹œí‚¤ê¸°
 		}
 		//imshow("background", background);
-		src.copyTo(image);//¿µ»ó º¹»çÇÏ±â
-		cvtColor(src, hsv, COLOR_BGR2HSV);//HSV·Î º¯È¯ÇÏ±â
-		blur(hsv, hsv, Size(5, 5));//ÇÊÅÍ Àû¿ë
+		src.copyTo(image);//ì˜ìƒ ë³µì‚¬í•˜ê¸°
+		cvtColor(src, hsv, COLOR_BGR2HSV);//HSVë¡œ ë³€í™˜í•˜ê¸°
+		blur(hsv, hsv, Size(5, 5));//í•„í„° ì ìš©
 
 		inRange(hsv,
 			Scalar(MIN(hmin, hmax), MIN(smin, smax), MIN(vmin, vmax)),
 			Scalar(MAX(hmin, hmax), MAX(smin, smax), MAX(vmin, vmax)),
-			dst);//ÇØ´ç ¹üÀ§ ÀÖ´Â »ö»ó Ã£±â
+			dst);//í•´ë‹¹ ë²”ìœ„ ìˆëŠ” ìƒ‰ìƒ ì°¾ê¸°
 
 		//imshow("InRange1", dst);
-		morphologyEx(dst, dst, MORPH_OPEN, element); //opening ½Ç½Ã
-		//dilate(dst, dst, element);//DIALATE¸¦ ÅëÇØ Áß°£¿¡ ºó ºÎºĞ Ã¤¿ì±â
-		dst_out = Mat::zeros(dst.size(), CV_8UC3);//MASK¸¦ ÇÒ ºÎºĞ
-		final_out = Mat::zeros(dst.size(), CV_8UC3);//ÃÖÁ¾ °á°ú¹°
+		morphologyEx(dst, dst, MORPH_OPEN, element); //opening ì‹¤ì‹œ
+		//dilate(dst, dst, element);//DIALATEë¥¼ í†µí•´ ì¤‘ê°„ì— ë¹ˆ ë¶€ë¶„ ì±„ìš°ê¸°
+		dst_out = Mat::zeros(dst.size(), CV_8UC3);//MASKë¥¼ í•  ë¶€ë¶„
+		final_out = Mat::zeros(dst.size(), CV_8UC3);//ìµœì¢… ê²°ê³¼ë¬¼
 
 		imshow("InRange", dst);
 
-		//Æ®·¢¹Ù·Î inrange °ª Á¶Á¤ÇÏ±â
+		//íŠ¸ë™ë°”ë¡œ inrange ê°’ ì¡°ì •í•˜ê¸°
 		if (trackObject) {
 			trackObject = false;
 			Mat roi_HSV(hsv, selection);
@@ -146,7 +146,7 @@ void processVideo(const string& videoPath)
 			setTrackbarPos("Vmax", "Source", vmax);
 		}
 
-		//¸¶¿ì½º·Î ¿µ¿ª ¼±ÅÃÇÑ ¿µ¿ª Ç¥ÇöÇÏ±â
+		//ë§ˆìš°ìŠ¤ë¡œ ì˜ì—­ ì„ íƒí•œ ì˜ì—­ í‘œí˜„í•˜ê¸°
 		if (selectObject && selection.area() > 0) {
 			Mat roi_RGB(image, selection);
 			bitwise_not(roi_RGB, roi_RGB);
@@ -155,26 +155,26 @@ void processVideo(const string& videoPath)
 		}
 
 
-		//contour Àû¿ëÇÏ±â
+		//contour ì ìš©í•˜ê¸°
 		findContours(dst, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 		if (!contours.empty()) {
 			double maxArea = 0;
 			int maxArea_idx = 0;
 			for (int i = 0; i < contours.size(); i++) {
-				double area = contourArea(contours[i]);//ÃÖ´ëÀÎ ¿µ¿ªÃ£±â
-				if (area > maxArea) {//±âÁ¸°Åº¸´Ù ¿µ¿ªÀÌ Å©¸é ÇØ´ç contour·Î ¹Ù²Ù±â
+				double area = contourArea(contours[i]);//ìµœëŒ€ì¸ ì˜ì—­ì°¾ê¸°
+				if (area > maxArea) {//ê¸°ì¡´ê±°ë³´ë‹¤ ì˜ì—­ì´ í¬ë©´ í•´ë‹¹ contourë¡œ ë°”ê¾¸ê¸°
 					maxArea = area;
 					maxArea_idx = i;
 				}
 			}
-			drawContours(dst_out, contours, maxArea_idx, Scalar(255, 255, 255), -1);// ³»ºÎ±îÁö Ç¥ÇöÇÏ±â
+			drawContours(dst_out, contours, maxArea_idx, Scalar(255, 255, 255), -1);// ë‚´ë¶€ê¹Œì§€ í‘œí˜„í•˜ê¸°
 			//imshow("Contour", dst_out);
 		}
 
-		mask_src = background & dst_out;//ÇØ´ç ¹°Ã¼¿Í °ãÄ£ ºÎºĞ
+		mask_src = background & dst_out;//í•´ë‹¹ ë¬¼ì²´ì™€ ê²¹ì¹œ ë¶€ë¶„
 		//imshow("mask 1", mask_src);
 
-		//maskÇÑ ºÎºĞ inverseÃëÇÏ±â->¹İ´ë ºÎºĞÀ» maskÇÏ±â À§ÇØ
+		//maskí•œ ë¶€ë¶„ inverseì·¨í•˜ê¸°->ë°˜ëŒ€ ë¶€ë¶„ì„ maskí•˜ê¸° ìœ„í•´
 		for (int i = 0; i < dst_out.rows; i++) {
 			for (int k = 0; k < dst_out.cols; k++) {
 				dst_out.at<Vec3b>(i, k)[0] = 255 - dst_out.at<Vec3b>(i, k)[0];
@@ -183,19 +183,19 @@ void processVideo(const string& videoPath)
 			}
 		}
 
-		mask_src2 = src & dst_out;//ÇØ´ç ¹°Ã¼¸¦ Á¦¿ÍÇÑ ºÎºĞ
+		mask_src2 = src & dst_out;//í•´ë‹¹ ë¬¼ì²´ë¥¼ ì œì™€í•œ ë¶€ë¶„
 		//imshow("mask 2", mask_src2);
 
-		final_out = mask_src + mask_src2;//¸¶½ºÅ©¸¦ Àû¿ëÇÑ µÎ ºÎºĞÀ» or¸¦ ÀÌ¿ëÇØ¼­ °ãÄ¡±â
-		namedWindow("final output", 0);
-		imshow("final output", final_out);//ÃÖÁ¾ ÀÌ¹ÌÁö
-		save_video.write(final_out);//ÀÌ¹ÌÁö ÀúÀåÇÏ±â
+		final_out = mask_src + mask_src2;//ë§ˆìŠ¤í¬ë¥¼ ì ìš©í•œ ë‘ ë¶€ë¶„ì„ orë¥¼ ì´ìš©í•´ì„œ ê²¹ì¹˜ê¸°
+		namedWindow("final output", WINDOW_AUTOSIZE);
+		imshow("final output", final_out);//ìµœì¢… ì´ë¯¸ì§€
+		save_video.write(final_out);//ì´ë¯¸ì§€ ì €ì¥í•˜ê¸°
 
 		char c = (char)waitKey(10);
 		if (c == 27) break;
 	}
 
-	//ÀÌ¹ÌÁö ÀúÀå Á¾·áÇÏ±â
+	//ì´ë¯¸ì§€ ì €ì¥ ì¢…ë£Œí•˜ê¸°
 	save_video.release();
 	cap.release();
 	destroyAllWindows();
@@ -204,8 +204,13 @@ void processVideo(const string& videoPath)
 
 int main()
 {
-	//processVideo("LAB_MagicCloak_Sample1.mp4");
-	processVideo("DLIP_LAB2_22000573_JunJaeLee_1.mp4");
+	hmin = 13, hmax = 60, smin = 70, smax = 200, vmin = 90, vmax = 200;//SAMPLE 1ê°’
+	processVideo("LAB_MagicCloak_Sample1.mp4", 1);
+	//processVideo("DLIP_LAB2_22000573_JunJaeLee.mp4");
+	hmin = 110, hmax = 176, smin = 87, smax = 255, vmin = 70, vmax = 255;//LAB2 ë¶„í™ìƒ‰ ë¬¼ì²´ ê°’
+	processVideo("DLIP_LAB2_22000573_JunJaeLee_1.mp4", 2);
+
+	
 	return 0;
 }
 
