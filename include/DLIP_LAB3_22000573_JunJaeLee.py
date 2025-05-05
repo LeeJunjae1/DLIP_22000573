@@ -43,7 +43,7 @@ def process_image(image_path, idx):
         if cv.contourArea(cnt) > 40:  # 너무 작은 contour 무시
             cv.drawContours(src_img, [cnt], -1, (0, 255, 0), 1)# contour 결과 그리기
             for pt in cnt:#
-                x, y=pt[0]#0번째 x, y 좌표값 갖고오기
+                x, y=pt[0]#x, y 좌표값 갖고오기
                 curve_points.append([x, y])#곡선 좌표 값 저장하기
 
     
@@ -133,6 +133,10 @@ def process_image(image_path, idx):
     # cv.namedWindow('source', cv.WINDOW_AUTOSIZE) 
     # cv.imshow('source',img)
     # cv.imshow("r", r)
+    # cv.namedWindow(f'Resulgt[{idx}]', cv.WINDOW_AUTOSIZE) 
+    # cv.imshow("g", g)
+    # cv.namedWindow(f'Resulbt[{idx}]', cv.WINDOW_AUTOSIZE) 
+    # cv.imshow("b", b)
     # cv.namedWindow('BLUR', cv.WINDOW_AUTOSIZE) 
     # cv.imshow('BLUR',blur)
     # cv.namedWindow('Edge', cv.WINDOW_AUTOSIZE) 
@@ -206,7 +210,7 @@ def process_video(image_path, idx):
             if 110 < length :#너무 길이가 짧은 것은 제거거
                 cv.drawContours(src_img, [cnt], -1, (0, 255, 0), 1)#contour 결과 표현하기
                 for pt in cnt:
-                    x, y=pt[0]#0인덱스 값을 받아들이기기
+                    x, y=pt[0]#x, y값 모두 추출
                     curve_points.append([x, y])#x,y값 저장
         
 
@@ -343,6 +347,5 @@ process_image("LV3.png", 3)
 process_image("LV1_simple.png", 4)
 process_image("LV2_simple.png", 5)
 process_image("LV3_simple.png", 6)
-cv.waitKey(0)
 process_video('LAB3_Video.mp4',7)
 cv.waitKey(0)
